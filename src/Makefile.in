@@ -409,6 +409,7 @@ MSGFMT = @MSGFMT@
 MSGMERGE = @MSGMERGE@
 MSGMERGE_FOR_MSGFMT_OPTION = @MSGMERGE_FOR_MSGFMT_OPTION@
 NM = @NM@
+NO_UNDEFINED = @NO_UNDEFINED@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -435,6 +436,8 @@ XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 YACC = @YACC@
 YFLAGS = @YFLAGS@
+ZSTD_COMPRESS_CFLAGS = @ZSTD_COMPRESS_CFLAGS@
+ZSTD_COMPRESS_LIBS = @ZSTD_COMPRESS_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -506,6 +509,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 zip_LIBS = @zip_LIBS@
+zstd_LIBS = @zstd_LIBS@
 AM_CPPFLAGS = -I. -I$(srcdir) -I$(top_srcdir)/lib -I..
 
 # Drop the 'u' flag that automake adds by default. It is incompatible
@@ -533,12 +537,14 @@ ARFLAGS = cr
 @HAVE_TRAMPOLINES_WARNING_TRUE@TRAMPOLINES_WARNING = -Wtrampolines
 @HAVE_NO_PACKED_NOT_ALIGNED_WARNING_FALSE@NO_PACKED_NOT_ALIGNED_WARNING = 
 @HAVE_NO_PACKED_NOT_ALIGNED_WARNING_TRUE@NO_PACKED_NOT_ALIGNED_WARNING = -Wno-packed-not-aligned
+@HAVE_USE_AFTER_FREE3_WARNING_FALSE@USE_AFTER_FREE3_WARNING = 
+@HAVE_USE_AFTER_FREE3_WARNING_TRUE@USE_AFTER_FREE3_WARNING = -Wuse-after-free=3
 AM_CFLAGS = -std=gnu99 -Wall -Wshadow -Wformat=2 \
 	-Wold-style-definition -Wstrict-prototypes \
 	$(TRAMPOLINES_WARNING) $(LOGICAL_OP_WARNING) \
 	$(DUPLICATED_COND_WARNING) $(NULL_DEREFERENCE_WARNING) \
-	$(IMPLICIT_FALLTHROUGH_WARNING) $(if \
-	$($(*F)_no_Werror),,-Werror) $(if \
+	$(IMPLICIT_FALLTHROUGH_WARNING) $(USE_AFTER_FREE3_WARNING) \
+	$(if $($(*F)_no_Werror),,-Werror) $(if \
 	$($(*F)_no_Wunused),,-Wunused -Wextra) $(if \
 	$($(*F)_no_Wstack_usage),,$(STACK_USAGE_WARNING)) $(if \
 	$($(*F)_no_Wpacked_not_aligned),$(NO_PACKED_NOT_ALIGNED_WARNING),) \
@@ -623,7 +629,7 @@ libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 libelf_pic_a_SOURCES = 
 am_libelf_pic_a_OBJECTS = $(libelf_a_SOURCES:.c=.os)
 libelf_so_DEPS = ../lib/libeu.a
-libelf_so_LDLIBS = $(libelf_so_DEPS) -lz $(am__append_5)
+libelf_so_LDLIBS = $(libelf_so_DEPS) -lz $(zstd_LIBS) $(am__append_5)
 libelf_so_LIBS = libelf_pic.a
 EXTRA_DIST = libelf.map
 all: all-am
@@ -1346,7 +1352,8 @@ print-%:
 libelf.so: $(srcdir)/libelf.map $(libelf_so_LIBS) $(libelf_so_DEPS)
 	$(AM_V_CCLD)$(LINK) $(dso_LDFLAGS) -o $@ \
 		-Wl,--soname,$@.$(VERSION) \
-		-Wl,--version-script,$<,--no-undefined \
+		-Wl,--version-script,$< \
+		$(NO_UNDEFINED) \
 		-Wl,--whole-archive $(libelf_so_LIBS) -Wl,--no-whole-archive \
 		$(libelf_so_LDLIBS)
 	@$(textrel_check)
