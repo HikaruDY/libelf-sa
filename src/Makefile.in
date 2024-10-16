@@ -314,7 +314,7 @@ DATA = $(noinst_DATA)
 am__include_HEADERS_DIST = libelf.h gelf.h nlist.h elf.h
 am__noinst_HEADERS_DIST = abstract.h common.h exttypes.h gelf_xlate.h \
 	libelfP.h version_xlate.h gnuhash_xlate.h note_xlate.h \
-	dl-hash.h chdr_xlate.h elf.h
+	dl-hash.h chdr_xlate.h elf32_getchdr.h elf.h
 HEADERS = $(include_HEADERS) $(noinst_HEADERS) $(pkginclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -573,7 +573,7 @@ noinst_DATA = $(noinst_LIBRARIES:_pic.a=.so)
 include_HEADERS = libelf.h gelf.h nlist.h $(am__append_3)
 noinst_HEADERS = abstract.h common.h exttypes.h gelf_xlate.h libelfP.h \
 	version_xlate.h gnuhash_xlate.h note_xlate.h dl-hash.h \
-	chdr_xlate.h $(am__append_4)
+	chdr_xlate.h elf32_getchdr.h $(am__append_4)
 pkginclude_HEADERS = elf-knowledge.h
 libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   elf_begin.c elf_next.c elf_rand.c elf_end.c elf_kind.c \
